@@ -2,6 +2,9 @@ const snakePit = document.getElementById('snakePit');
 const context = snakePit.getContext('2d');
 document.addEventListener('keydown', onKeyPressed);
 setInterval(render, 100);
+//grid
+const gridSize = 20;
+const tileSize = snakePit.width / gridSize;
 
 //initial snake head position
 let x = 10;
@@ -11,28 +14,77 @@ let y = 10;
 let vx = 0;
 let vy = 0;
 
-//initial acceleration
-let level = 1;
-
-//grid
-const gridSize = 20;
-const tileSize = snakePit.width / gridSize;
-
 //initalize snake
 let snake = {
+    initialSize: 3,
     body: [{ positionX: x, positionY: y }],
-    size: 5,
-    color: 'lime'
-}
+    size: 3,
+    color: 'green'
+};
+
+//initialize apple
+let apple = {
+    position: generateApplePosition(),
+    size: tileSize / 2,
+    color: 'red'
+};
 
 
 
 function render() {
+    //calculate position
+    x = x + vx;
+    y = y + vy;
 
-    x = x + vx * level;
-    y = y + vy * level;
+    renderSnakePit();
+    renderSnake();
+    renderApple();
+    wallColisions();
+    eatApple()
+}
 
-    //teleport
+function renderSnakePit() {
+    context.fillStyle = 'yellow';
+    context.fillRect(0, 0, snakePit.width, snakePit.height);
+}
+
+function renderSnake() {
+    context.fillStyle = snake.color;
+    snake.body.push({ positionX: x, positionY: y });
+    if (snake.body.length > snake.size) {
+        snake.body.shift();
+    }
+    for (let i = 0; i < snake.body.length; i++) {
+        context.fillRect(
+            snake.body[i].positionX * tileSize,
+            snake.body[i].positionY * tileSize,
+            tileSize,
+            tileSize);
+        if (i != snake.body.length - 1
+            && snake.body[i].positionX == snake.body[snake.body.length - 1].positionX
+            && snake.body[i].positionY == snake.body[snake.body.length - 1].positionY) {
+            snake.size = snake.initialSize;
+            snake.body.slice(snake.body.length - snake.initialSize);
+        }
+    }
+}
+
+
+function renderApple() {
+    context.fillStyle = apple.color;
+    context.beginPath();
+    // context.arc(posx, posy, 50, 0, 2 * Math.PI);
+    context.arc(
+        apple.position.positionX * tileSize + tileSize / 2,
+        apple.position.positionY * tileSize + tileSize / 2,
+        apple.size,
+        0,
+        2 * Math.PI);
+    context.fill();
+
+}
+
+function wallColisions() {
     if (x * tileSize > snakePit.width) {
         x = 0;
     }
@@ -45,15 +97,23 @@ function render() {
     if (y * tileSize < 0) {
         y = snakePit.height / tileSize;
     }
+}
 
-    context.fillStyle = 'yellow';
-    context.fillRect(0, 0, snakePit.width, snakePit.height);
+function eatApple() {
+    const snakeLength = snake.body.length;
+    if (snake.body[snakeLength - 1].positionX === apple.position.positionX
+        && snake.body[snakeLength - 1].positionY === apple.position.positionY) {
+        snake.size++;
+        apple.position = generateApplePosition();
+        console.log(snake.body.length);
 
-    context.fillStyle = snake.color;
+    }
+}
 
-    context.fillRect(x * tileSize, y * tileSize, tileSize, tileSize);
-
-
+function generateApplePosition(){
+    let x = Math.random() * gridSize;
+    let y = Math.random() * gridSize;
+    return {positionX: Math.round(x), positionY: Math.round(y)}
 }
 
 function onKeyPressed(event) {
