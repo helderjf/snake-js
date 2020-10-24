@@ -65,11 +65,10 @@ function renderSnake() {
             && snake.body[i].positionX == snake.body[snake.body.length - 1].positionX
             && snake.body[i].positionY == snake.body[snake.body.length - 1].positionY) {
             snake.size = snake.initialSize;
-            snake.body.slice(snake.body.length - snake.initialSize);
+            snake.body = snake.body.slice(snake.body.length - 1 - snake.initialSize);
         }
     }
 }
-
 
 function renderApple() {
     context.fillStyle = apple.color;
