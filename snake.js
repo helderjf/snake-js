@@ -1,7 +1,8 @@
 const snakePit = document.getElementById('snakePit');
 const context = snakePit.getContext('2d');
 document.addEventListener('keydown', onKeyPressed);
-setInterval(render, 100);
+let refreshRate = setInterval(render, 100);
+let paused = false;
 //grid
 const gridSize = 20;
 const tileSize = snakePit.width / gridSize;
@@ -138,8 +139,21 @@ function onKeyPressed(event) {
             vy = 1;
             console.log('down');
             break;
+        case 32:
+            togglePause();
+            break;
         default:
             console.log('other key');
             break;
+    }
+
+    function togglePause(){
+        if(paused == true){
+            refreshRate = setInterval(render, 100);
+            paused = false;
+        }else{
+            clearInterval(refreshRate);
+            paused = true;
+        }
     }
 }
