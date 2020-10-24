@@ -1,3 +1,10 @@
+//score board
+let scoreBoardCurrent = document.getElementById('scoreBoardCurrent');
+let scoreBoardBest = document.getElementById('scoreBoardBest');
+let score = bestScore = 0;
+updateScore();
+
+//snake pit
 const snakePit = document.getElementById('snakePit');
 const context = snakePit.getContext('2d');
 document.addEventListener('keydown', onKeyPressed);
@@ -6,11 +13,9 @@ let paused = false;
 //grid
 const gridSize = 20;
 const tileSize = snakePit.width / gridSize;
-
 //initial snake head position
 let x = 10;
 let y = 10;
-
 //initial velocity
 let vx = 0;
 let vy = 0;
@@ -29,8 +34,6 @@ let apple = {
     size: tileSize / 2,
     color: 'red'
 };
-
-
 
 function render() {
     //calculate position
@@ -66,6 +69,8 @@ function renderSnake() {
             && snake.body[i].positionY == snake.body[snake.body.length - 1].positionY) {
             snake.size = snake.initialSize;
             snake.body = snake.body.slice(snake.body.length - 1 - snake.initialSize);
+            score = 0;
+            updateScore();
         }
     }
 }
@@ -105,15 +110,16 @@ function eatApple() {
         && snake.body[snakeLength - 1].positionY === apple.position.positionY) {
         snake.size++;
         apple.position = generateApplePosition();
-        console.log(snake.body.length);
+        score++;
+        updateScore();
 
     }
 }
 
-function generateApplePosition(){
+function generateApplePosition() {
     let x = Math.random() * gridSize;
     let y = Math.random() * gridSize;
-    return {positionX: Math.round(x), positionY: Math.round(y)}
+    return { positionX: Math.round(x), positionY: Math.round(y) }
 }
 
 function onKeyPressed(event) {
@@ -145,14 +151,22 @@ function onKeyPressed(event) {
             console.log('other key');
             break;
     }
+}
 
-    function togglePause(){
-        if(paused == true){
-            refreshRate = setInterval(render, 100);
-            paused = false;
-        }else{
-            clearInterval(refreshRate);
-            paused = true;
-        }
+function togglePause() {
+    if (paused == true) {
+        refreshRate = setInterval(render, 100);
+        paused = false;
+    } else {
+        clearInterval(refreshRate);
+        paused = true;
     }
+}
+
+function updateScore(){
+    if(score > bestScore){
+        bestScore = score;
+    }
+    scoreBoardCurrent.innerHTML = 'Score: ' + score + ' points';
+    scoreBoardBest.innerHTML = 'Your Best: ' + bestScore + ' points';
 }
