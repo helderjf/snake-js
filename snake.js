@@ -1,6 +1,6 @@
 //score board
-let scoreBoardCurrent = document.getElementById('scoreBoardCurrent');
-let scoreBoardBest = document.getElementById('scoreBoardBest');
+let currentScoreElement = document.getElementById('currentScore');
+let bestScoreElement = document.getElementById('bestScore');
 let score = bestScore = 0;
 updateScore();
 
@@ -8,14 +8,15 @@ updateScore();
 const snakePit = document.getElementById('snakePit');
 const context = snakePit.getContext('2d');
 document.addEventListener('keydown', onKeyPressed);
+const snakePitColor = 'yellow';
 let refreshRate = setInterval(render, 100);
 let paused = false;
 //grid
 const gridSize = 20;
 const tileSize = snakePit.width / gridSize;
-//initial snake head position
-let x = 10;
-let y = 10;
+//initial snake position
+let x = gridSize/2;
+let y = gridSize/2;
 //initial velocity
 let vx = 0;
 let vy = 0;
@@ -41,14 +42,14 @@ function render() {
     y = y + vy;
 
     renderSnakePit();
+    detectWallCollisions();
     renderSnake();
     renderApple();
-    wallColisions();
     eatApple()
 }
 
 function renderSnakePit() {
-    context.fillStyle = 'yellow';
+    context.fillStyle = snakePitColor;
     context.fillRect(0, 0, snakePit.width, snakePit.height);
 }
 
@@ -60,10 +61,10 @@ function renderSnake() {
     }
     for (let i = 0; i < snake.body.length; i++) {
         context.fillRect(
-            snake.body[i].positionX * tileSize,
-            snake.body[i].positionY * tileSize,
-            tileSize,
-            tileSize);
+            snake.body[i].positionX * tileSize +1,
+            snake.body[i].positionY * tileSize +1,
+            tileSize -1,
+            tileSize -1);
         if (i != snake.body.length - 1
             && snake.body[i].positionX == snake.body[snake.body.length - 1].positionX
             && snake.body[i].positionY == snake.body[snake.body.length - 1].positionY) {
@@ -89,18 +90,18 @@ function renderApple() {
 
 }
 
-function wallColisions() {
-    if (x * tileSize > snakePit.width) {
+function detectWallCollisions() {
+    if ((x+1) * tileSize > snakePit.width) {
         x = 0;
     }
     if (x * tileSize < 0) {
         x = snakePit.width / tileSize;
     }
-    if (y * tileSize > snakePit.height) {
+    if ((y+1) * tileSize > snakePit.height) {
         y = 0;
     }
     if (y * tileSize < 0) {
-        y = snakePit.height / tileSize;
+        y = snakePit.height / tileSize - 1;
     }
 }
 
@@ -112,7 +113,6 @@ function eatApple() {
         apple.position = generateApplePosition();
         score++;
         updateScore();
-
     }
 }
 
@@ -167,6 +167,6 @@ function updateScore(){
     if(score > bestScore){
         bestScore = score;
     }
-    scoreBoardCurrent.innerHTML = 'Score: ' + score + ' points';
-    scoreBoardBest.innerHTML = 'Your Best: ' + bestScore + ' points';
+    currentScoreElement.innerHTML = 'Score: ' + score + ' points';
+    bestScoreElement.innerHTML = 'Your Best: ' + bestScore + ' points';
 }

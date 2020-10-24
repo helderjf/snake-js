@@ -6,10 +6,14 @@
     <body>
         <h1>Snake JS</h1>
         <br>
-        <canvas id="snakePit" width="500" height="500"></canvas>
+        <div id="gameBoard" class="left">
+            <canvas id="snakePit" width="500" height="500"></canvas>
+        </div>
         <br>
-        <h2 id = "scoreBoardCurrent"></h2>
-        <h2 id = "scoreBoardBest"></h2>
+        <div id="scoreBoard" class="right">
+            <h2 id = "currentScore"></h2>
+            <h2 id = "bestScore"></h2>
+        </div>
 
         <script src="snake.js"></script>
     </body>

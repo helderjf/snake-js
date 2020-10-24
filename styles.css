@@ -4,3 +4,17 @@ canvas {
     margin-right: auto;
     display: block;
 }
+
+h1, h2 {
+    font-family: fantasy;
+}
+
+.left {
+    float: left;
+    margin-right: 5%;
+    margin-left: 5%;
+}
+
+.right {
+    margin-left: 5%;
+}
