@@ -53,12 +53,12 @@ function renderSnake() {
         snake.body.shift();
     }
     for (let i = 0; i < snake.body.length; i++) {
-        if (gameStarted 
-            && i != snake.body.length -1 //not the head
+        if (gameStarted
+            && i != snake.body.length - 1 //not the head
             && snake.body[i].positionX == snake.body[snake.body.length - 1].positionX
             && snake.body[i].positionY == snake.body[snake.body.length - 1].positionY) {
-            
-            restart();
+
+            gameOver();
             break;
         }
         context.fillRect(
@@ -111,7 +111,7 @@ function eatApple() {
 function initializeSnake() {
     return {
         body: [{ positionX: x, positionY: y }],
-        size: 3,    
+        size: 3,
         color: 'green'
     };
 }
@@ -172,7 +172,16 @@ function togglePause() {
     } else {
         clearInterval(refreshRate);
         paused = true;
+        renderPauseBanner();
     }
+}
+
+function renderPauseBanner() {
+    const text = 'Paused'
+    context.fillStyle = 'black';
+    context.textAlign = 'center';
+    context.font = '50px monospace';
+    context.fillText(text, snakePit.width / 2, snakePit.height / 2);
 }
 
 function updateScore() {
@@ -189,17 +198,27 @@ function levelUp() {
     refreshRate = setInterval(render, 100 / level);
 }
 
-function restart() {
+function gameOver() {
     clearInterval(refreshRate);
     vx = vy = 0;
     x = y = 10;
     level = 1;
     score = 0;
-    updateScore();
     gameStarted = false;
     snake = initializeSnake();
     apple = generateApple();
     renderSnakePit();
-    refreshRate = setInterval(render, 100 / level);
+    renderGameOverBanner();
+    setTimeout(function () {
+        refreshRate = setInterval(render, 100 / level);
+        updateScore();
+    }, 5000)
+}
 
+function renderGameOverBanner() {
+    const text = 'Game Over';
+    context.fillStyle = 'black';
+    context.textAlign = 'center';
+    context.font = '50px monospace';
+    context.fillText(text, snakePit.width / 2, snakePit.height / 2);
 }
