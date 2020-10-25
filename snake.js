@@ -117,9 +117,18 @@ function eatApple() {
 }
 
 function generateApplePosition() {
-    let x = Math.random() * gridSize;
-    let y = Math.random() * gridSize;
-    return { positionX: Math.round(x), positionY: Math.round(y) }
+    let x = Math.random() * (gridSize - 1);
+    let y = Math.random() * (gridSize - 1);
+    let position = { positionX: Math.round(x), positionY: Math.round(y) };
+
+    //prevent apple from falling on top of snake's body
+    while (snake.body.some((it) => it.positionX == position.positionX && it.positionY == position.positionY ) == true) {
+        x = Math.random() * (gridSize - 1);
+        y = Math.random() * (gridSize - 1);
+        position = { positionX: Math.round(x), positionY: Math.round(y) };
+        console.log("ups");
+    }
+    return position;
 }
 
 function onKeyPressed(event) {
