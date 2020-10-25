@@ -9,7 +9,8 @@ const snakePit = document.getElementById('snakePit');
 const context = snakePit.getContext('2d');
 document.addEventListener('keydown', onKeyPressed);
 const snakePitColor = 'yellow';
-let refreshRate = setInterval(render, 100);
+let level = 1;
+let refreshRate = setInterval(render, 100 / level);
 let paused = false;
 //grid
 const gridSize = 20;
@@ -21,20 +22,12 @@ let y = gridSize / 2;
 let vx = 0;
 let vy = 0;
 
-//initalize snake
-let snake = {
-    initialSize: 3,
-    body: [{ positionX: x, positionY: y }],
-    size: 3,
-    color: 'green'
-};
+let gameStarted = false;
 
+//initalize snake
+let snake = initializeSnake();
 //initialize apple
-let apple = {
-    position: generateApplePosition(),
-    size: tileSize / 2,
-    color: 'red'
-};
+let apple = generateApple();
 
 function render() {
     //calculate position
@@ -60,26 +53,25 @@ function renderSnake() {
         snake.body.shift();
     }
     for (let i = 0; i < snake.body.length; i++) {
+        if (gameStarted 
+            && i != snake.body.length -1 //not the head
+            && snake.body[i].positionX == snake.body[snake.body.length - 1].positionX
+            && snake.body[i].positionY == snake.body[snake.body.length - 1].positionY) {
+            
+            restart();
+            break;
+        }
         context.fillRect(
             snake.body[i].positionX * tileSize + 1,
             snake.body[i].positionY * tileSize + 1,
             tileSize - 1,
             tileSize - 1);
-        if (i != snake.body.length - 1
-            && snake.body[i].positionX == snake.body[snake.body.length - 1].positionX
-            && snake.body[i].positionY == snake.body[snake.body.length - 1].positionY) {
-            snake.size = snake.initialSize;
-            snake.body = snake.body.slice(snake.body.length - 1 - snake.initialSize);
-            score = 0;
-            updateScore();
-        }
     }
 }
 
 function renderApple() {
     context.fillStyle = apple.color;
     context.beginPath();
-    // context.arc(posx, posy, 50, 0, 2 * Math.PI);
     context.arc(
         apple.position.positionX * tileSize + tileSize / 2,
         apple.position.positionY * tileSize + tileSize / 2,
@@ -87,7 +79,6 @@ function renderApple() {
         0,
         2 * Math.PI);
     context.fill();
-
 }
 
 function detectWallCollisions() {
@@ -110,61 +101,73 @@ function eatApple() {
     if (snake.body[snakeLength - 1].positionX === apple.position.positionX
         && snake.body[snakeLength - 1].positionY === apple.position.positionY) {
         snake.size++;
-        apple.position = generateApplePosition();
+        apple = generateApple();
         score++;
         updateScore();
+        levelUp();
     }
 }
 
-function generateApplePosition() {
+function initializeSnake() {
+    return {
+        body: [{ positionX: x, positionY: y }],
+        size: 3,    
+        color: 'green'
+    };
+}
+
+function generateApple() {
     let x = Math.random() * (gridSize - 1);
     let y = Math.random() * (gridSize - 1);
     let position = { positionX: Math.round(x), positionY: Math.round(y) };
 
     //prevent apple from falling on top of snake's body
-    while (snake.body.some((it) => it.positionX == position.positionX && it.positionY == position.positionY ) == true) {
+    while (snake.body.some((it) => it.positionX == position.positionX && it.positionY == position.positionY) == true) {
         x = Math.random() * (gridSize - 1);
         y = Math.random() * (gridSize - 1);
         position = { positionX: Math.round(x), positionY: Math.round(y) };
         console.log("ups");
     }
-    return position;
+
+    return {
+        position,
+        size: tileSize / 2,
+        color: 'red'
+    };
 }
 
 function onKeyPressed(event) {
+    if(gameStarted == false){
+        gameStarted = true;
+    }
     switch (event.keyCode) {
         case 37:
             vx = -1;
             vy = 0;
-            console.log('left');
             break;
         case 38:
             vx = 0;
             vy = -1;
-            console.log('up');
             break;
         case 39:
             vx = 1;
             vy = 0;
-            console.log('right');
             break;
         case 40:
             vx = 0;
             vy = 1;
-            console.log('down');
             break;
         case 32:
             togglePause();
             break;
         default:
-            console.log('other key');
             break;
     }
 }
 
 function togglePause() {
     if (paused == true) {
-        refreshRate = setInterval(render, 100);
+        refreshRate = setInterval(render, 100 / level);
         paused = false;
     } else {
         clearInterval(refreshRate);
@@ -178,4 +181,25 @@ function updateScore() {
     }
     currentScoreElement.innerHTML = 'Score: ' + score + ' points';
     bestScoreElement.innerHTML = 'Your Best: ' + bestScore + ' points';
+}
+
+function levelUp() {
+    level += 0.05;
+    clearInterval(refreshRate);
+    refreshRate = setInterval(render, 100 / level);
+}
+
+function restart() {
+    clearInterval(refreshRate);
+    vx = vy = 0;
+    x = y = 10;
+    level = 1;
+    score = 0;
+    updateScore();
+    gameStarted = false;
+    snake = initializeSnake();
+    apple = generateApple();
+    renderSnakePit();
+    refreshRate = setInterval(render, 100 / level);
+
 }
