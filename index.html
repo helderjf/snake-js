@@ -1,20 +1,33 @@
 <html>
-    <head>
-        <title>Snake JS</title>
-        <link rel="stylesheet" href="styles.css">
-    </head>
-    <body>
-        <h1>Snake JS</h1>
-        <br>
-        <div id="gameBoard" class="left">
-            <canvas id="snakePit" width="500" height="500"></canvas>
-        </div>
-        <br>
-        <div id="scoreBoard" class="right">
-            <h2 id = "currentScore"></h2>
-            <h2 id = "bestScore"></h2>
-        </div>
 
-        <script src="snake.js"></script>
-    </body>
+<head>
+    <title>Snake JS</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <h1>Snake JS</h1>
+    <br>
+    <div id="gameBoard" class="left">
+        <canvas id="snakePit" width="500" height="500"></canvas>
+    </div>
+    <br>
+    <div class="right">
+        <div id="scoreBoard" class="up">
+            <h2 id="currentScore"></h2>
+            <h2 id="bestScore"></h2>
+        </div>
+        <div id="instructions" class="down">
+            <h2>Instructions</h2>
+            <ul>
+                <li>Use the arrow keys to move the snake around</li>
+                <li>Hit space key to pause/unpause the game</li>
+                <li>Have fun :-)</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="snake.js"></script>
+</body>
+
 </html>

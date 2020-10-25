@@ -15,8 +15,8 @@ let paused = false;
 const gridSize = 20;
 const tileSize = snakePit.width / gridSize;
 //initial snake position
-let x = gridSize/2;
-let y = gridSize/2;
+let x = gridSize / 2;
+let y = gridSize / 2;
 //initial velocity
 let vx = 0;
 let vy = 0;
@@ -61,10 +61,10 @@ function renderSnake() {
     }
     for (let i = 0; i < snake.body.length; i++) {
         context.fillRect(
-            snake.body[i].positionX * tileSize +1,
-            snake.body[i].positionY * tileSize +1,
-            tileSize -1,
-            tileSize -1);
+            snake.body[i].positionX * tileSize + 1,
+            snake.body[i].positionY * tileSize + 1,
+            tileSize - 1,
+            tileSize - 1);
         if (i != snake.body.length - 1
             && snake.body[i].positionX == snake.body[snake.body.length - 1].positionX
             && snake.body[i].positionY == snake.body[snake.body.length - 1].positionY) {
@@ -91,13 +91,13 @@ function renderApple() {
 }
 
 function detectWallCollisions() {
-    if ((x+1) * tileSize > snakePit.width) {
+    if ((x + 1) * tileSize > snakePit.width) {
         x = 0;
     }
     if (x * tileSize < 0) {
         x = snakePit.width / tileSize;
     }
-    if ((y+1) * tileSize > snakePit.height) {
+    if ((y + 1) * tileSize > snakePit.height) {
         y = 0;
     }
     if (y * tileSize < 0) {
@@ -163,8 +163,8 @@ function togglePause() {
     }
 }
 
-function updateScore(){
-    if(score > bestScore){
+function updateScore() {
+    if (score > bestScore) {
         bestScore = score;
     }
     currentScoreElement.innerHTML = 'Score: ' + score + ' points';

@@ -5,7 +5,7 @@ canvas {
     display: block;
 }
 
-h1, h2 {
+body {
     font-family: fantasy;
 }
 
@@ -17,4 +17,14 @@ h1, h2 {
 
 .right {
     margin-left: 5%;
+}
+
+.up {
+    /* width: max-content; */
+    margin-bottom: 20%;
+}
+.down{
+    /* width: max-content; */
+    margin-top: 20%;
+
 }
