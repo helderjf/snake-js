@@ -1,28 +1,30 @@
-//score board
+//set up score board
 let currentScoreElement = document.getElementById('currentScore');
 let bestScoreElement = document.getElementById('bestScore');
 let score = bestScore = 0;
 updateScore();
 
-//snake pit
+//set up snake pit
 const snakePit = document.getElementById('snakePit');
 const context = snakePit.getContext('2d');
 document.addEventListener('keydown', onKeyPressed);
 const snakePitColor = 'yellow';
-let level = 1;
-let refreshRate = setInterval(render, 100 / level);
-let paused = false;
-//grid
 const gridSize = 20;
 const tileSize = snakePit.width / gridSize;
+//gameplay variables
+let level = 1;
+let refreshRate = setInterval(render, 100 / level);
+let gameStarted = false;
+let gameEnded = false;
+let gamePaused = false;
+let keysLocked = false;
+
 //initial snake position
 let x = gridSize / 2;
 let y = gridSize / 2;
-//initial velocity
+//initial snake speed
 let vx = 0;
 let vy = 0;
-
-let gameStarted = false;
 
 //initalize snake
 let snake = initializeSnake();
@@ -30,7 +32,7 @@ let snake = initializeSnake();
 let apple = generateApple();
 
 function render() {
-    //calculate position
+    //calculate next snake position
     x = x + vx;
     y = y + vy;
 
@@ -48,15 +50,19 @@ function renderSnakePit() {
 
 function renderSnake() {
     context.fillStyle = snake.color;
+    //update head position
     snake.body.push({ positionX: x, positionY: y });
     if (snake.body.length > snake.size) {
         snake.body.shift();
     }
+
+    //detect body colisions and render snake
+    const snakeHeadIndex = snake.body.length - 1;
     for (let i = 0; i < snake.body.length; i++) {
-        if (gameStarted
-            && i != snake.body.length - 1 //not the head
-            && snake.body[i].positionX == snake.body[snake.body.length - 1].positionX
-            && snake.body[i].positionY == snake.body[snake.body.length - 1].positionY) {
+        if (gameStarted && !gamePaused
+            && i != snakeHeadIndex
+            && snake.body[i].positionX == snake.body[snakeHeadIndex].positionX
+            && snake.body[i].positionY == snake.body[snakeHeadIndex].positionY) {
 
             gameOver();
             break;
@@ -97,9 +103,9 @@ function detectWallCollisions() {
 }
 
 function eatApple() {
-    const snakeLength = snake.body.length;
-    if (snake.body[snakeLength - 1].positionX === apple.position.positionX
-        && snake.body[snakeLength - 1].positionY === apple.position.positionY) {
+    const snakeHeadIndex = snake.body.length - 1;
+    if (snake.body[snakeHeadIndex].positionX === apple.position.positionX
+        && snake.body[snakeHeadIndex].positionY === apple.position.positionY) {
         snake.size++;
         apple = generateApple();
         score++;
@@ -137,53 +143,64 @@ function generateApple() {
 }
 
 function onKeyPressed(event) {
-    if (gameStarted == false) {
-        gameStarted = true;
+    if (gameEnded || keysLocked) {
+        return;
     }
+    keysLocked = true;
     switch (event.keyCode) {
-        case 37:
-            if (vx == 1) {
+        case 37://left
+            if (vx == 1) {//prevent reversing
                 break;
             }
+            gameStarted = true;
             vx = -1;
             vy = 0;
             break;
-        case 38:
+        case 38://up
             if (vy == 1) {
                 break;
             }
+            gameStarted = true;
             vx = 0;
             vy = -1;
             break;
-        case 39:
+        case 39://right
             if (vx == -1) {
                 break;
             }
+            gameStarted = true;
             vx = 1;
             vy = 0;
             break;
-        case 40:
+        case 40://down
             if (vy == -1) {
                 break;
             }
+            gameStarted = true;
             vx = 0;
             vy = 1;
             break;
-        case 32:
-            togglePause();
+        case 32://space
+            if (gameStarted) {
+                togglePause();
+            }
             break;
         default:
             break;
     }
+    keysLocked = false;
 }
 
 function togglePause() {
-    if (paused == true) {
+    if (!gameStarted) {
+        return;
+    }
+    if (gamePaused) {
         refreshRate = setInterval(render, 100 / level);
-        paused = false;
+        gamePaused = false;
     } else {
         clearInterval(refreshRate);
-        paused = true;
+        gamePaused = true;
         renderPauseBanner();
     }
 }
@@ -212,19 +229,21 @@ function levelUp() {
 
 function gameOver() {
     clearInterval(refreshRate);
+    gameEnded = true;
+    gameStarted = false;
     vx = vy = 0;
     x = y = 10;
     level = 1;
     score = 0;
-    gameStarted = false;
     snake = initializeSnake();
     apple = generateApple();
     renderSnakePit();
     renderGameOverBanner();
     setTimeout(function () {
-        refreshRate = setInterval(render, 100 / level);
         updateScore();
-    }, 5000)
+        gameEnded = false;
+        refreshRate = setInterval(render, 100 / level);
+    }, 2000)
 }
 
 function renderGameOverBanner() {
