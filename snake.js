@@ -137,23 +137,35 @@ function generateApple() {
 }
 
 function onKeyPressed(event) {
-    if(gameStarted == false){
+    if (gameStarted == false) {
         gameStarted = true;
     }
     switch (event.keyCode) {
         case 37:
+            if (vx == 1) {
+                break;
+            }
             vx = -1;
             vy = 0;
             break;
         case 38:
+            if (vy == 1) {
+                break;
+            }
             vx = 0;
             vy = -1;
             break;
         case 39:
+            if (vx == -1) {
+                break;
+            }
             vx = 1;
             vy = 0;
             break;
         case 40:
+            if (vy == -1) {
+                break;
+            }
             vx = 0;
             vy = 1;
             break;
